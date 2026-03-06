@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arc Sidebar</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <aside class="arc-shell">
+      <header class="arc-top">
+        <button class="arc-circle" title="Nouvel onglet" data-action="new-tab">+</button>
+        <button class="arc-circle" title="Mode focus">◐</button>
+        <button class="arc-circle" title="Réglages">⚙</button>
+      </header>
+
+      <section class="arc-search-wrap">
+        <input id="quickSearch" class="arc-search" placeholder="Rechercher ou entrer une URL" />
+      </section>
+
+      <section class="arc-group">
+        <h2 class="arc-title">Favoris</h2>
+        <ul id="pinnedList" class="arc-list"></ul>
+      </section>
+
+      <section class="arc-group">
+        <div class="arc-row">
+          <h2 class="arc-title">Aujourd'hui</h2>
+          <button class="arc-mini" id="addToday">Ajouter</button>
+        </div>
+        <ul id="todayList" class="arc-list"></ul>
+      </section>
+
+      <footer class="arc-footer">Arc-like sidebar for Chrome</footer>
+    </aside>
+
+    <template id="itemTemplate">
+      <li class="arc-item">
+        <button class="arc-item-main">
+          <span class="arc-bullet"></span>
+          <span class="arc-label"></span>
+        </button>
+        <button class="arc-item-remove" title="Supprimer">×</button>
+      </li>
+    </template>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
