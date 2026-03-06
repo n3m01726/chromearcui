@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Arc Sidebar Replica",
+  "description": "Une extension Chrome qui recrée une sidebar inspirée d'Arc.",
+  "version": "1.0.0",
+  "permissions": [
+    "sidePanel",
+    "storage"
+  ],
+  "action": {
+    "default_title": "Ouvrir la sidebar Arc"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  }
+}
