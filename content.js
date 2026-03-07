@@ -3,6 +3,11 @@
   const STORAGE_KEY = "arc-sidebar-state";
 
   const seed = {
+    pinned: [
+      { label: "Gmail", url: "https://mail.google.com" },
+      { label: "Notion", url: "https://www.notion.so" },
+      { label: "GitHub", url: "https://github.com" }
+    ],
     today: [
       { label: "Docs Chrome Extension", url: "https://developer.chrome.com/docs/extensions" },
       { label: "Arc Browser", url: "https://arc.net" }
@@ -10,7 +15,6 @@
   };
 
   let state = structuredClone(seed);
-  let bookmarks = [];
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === "arc-sidebar-ping") {
@@ -32,9 +36,7 @@
     }
 
     const loaded = await chrome.storage.local.get(STORAGE_KEY);
-    const loadedState = loaded[STORAGE_KEY] ?? {};
-    state.today = Array.isArray(loadedState.today) ? loadedState.today : structuredClone(seed.today);
-    bookmarks = await getBookmarks();
+    state = loaded[STORAGE_KEY] ?? structuredClone(seed);
 
     const host = document.createElement("div");
     host.id = HOST_ID;
@@ -44,19 +46,6 @@
 
     wireEvents(host);
     render(host);
-  }
-
-  function getBookmarks() {
-    return new Promise((resolve) => {
-      chrome.runtime.sendMessage({ type: "arc-sidebar-get-bookmarks" }, (response) => {
-        if (chrome.runtime.lastError) {
-          resolve([]);
-          return;
-        }
-
-        resolve(Array.isArray(response?.bookmarks) ? response.bookmarks : []);
-      });
-    });
   }
 
   function buildMarkup() {
@@ -96,7 +85,6 @@
         .arc-item-remove { width: 32px; }
         .arc-bullet { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(120deg, #5ca6ff, #9f7fff); box-shadow: 0 0 0 3px rgb(142 163 255 / 20%); }
         .arc-label { font-size: 13px; }
-        .arc-empty { color: #9aa7ce; font-size: 12px; text-align: center; padding: 8px; }
         .arc-footer { margin-top: auto; font-size: 11px; text-align: center; }
       </style>
       <aside class="arc-shell">
@@ -170,22 +158,12 @@
   }
 
   function render(host) {
-    drawList(host.querySelector("#pinnedList"), bookmarks, false, host);
+    drawList(host.querySelector("#pinnedList"), state.pinned, false, host);
     drawList(host.querySelector("#todayList"), state.today, true, host);
   }
 
   function drawList(container, items, removable, host) {
     container.textContent = "";
-
-    if (items.length === 0) {
-      const empty = document.createElement("li");
-      empty.className = "arc-empty";
-      empty.textContent = removable
-        ? "Aucun raccourci aujourd'hui"
-        : "Aucun favori trouvé dans Chrome";
-      container.appendChild(empty);
-      return;
-    }
 
     items.forEach((entry, index) => {
       const item = document.createElement("li");
@@ -216,6 +194,6 @@
   }
 
   function save() {
-    return chrome.storage.local.set({ [STORAGE_KEY]: { today: state.today } });
+    return chrome.storage.local.set({ [STORAGE_KEY]: state });
   }
 })();
